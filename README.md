@@ -13,7 +13,7 @@ To simulate a simple inter-process communication protocol using [CSIM](http://ww
  
  ## Getting Started
  ### Prerequisites
-  * install C lanuage
+  * install [Code::Blocks](http://www.codeblocks.org/) and [C Programming Language](https://www.geeksforgeeks.org/c-language-set-1-introduction/)
   * install [CSIM](http://www.mesquite.com/)
  ### Compilation & Run
  ```
