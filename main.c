@@ -11,7 +11,7 @@
 #define TRANS_TIME 0.1
 #define REQUEST 1 
 #define REPLY 2
-#define INTER_ARR_TIME 5.0
+#define INTER_ARR_TIME 30.0
 
 /* typedef is used to give a name to a type (it can be user-definded type)*/
 typedef struct msg *msg_t;
@@ -103,11 +103,12 @@ void proc(long n){
 
     create("proc");
     while(clock < SIMTIME){
+        /*hold(exponential(INTER_ARR_TIME));*/
+        use(node[n].cpu, exponential(INTER_ARR_TIME));
         m = new_msg(n);
-        hold(expntl(INTER_ARR_TIME));
         count += 1;
         send_msg(m);
-        printf("node.%ld sends a HELLO to node.%ld at %6.3f seconds\n", m->from, m->to, clock);
+        printf("node.%ld sends a HELLO to node.%ld at %6.3f seconds\n", m->from, m->to, clock); 
 
         s = timed_receive(node[n].mbox, (long *)&m, TIME_OUT);
         switch(s){
@@ -117,7 +118,7 @@ void proc(long n){
                 send_msg(m);
                 printf("node.%ld re-sends a HELLO to node.%ld at %6.3f seconds\n", m->from, m->to, clock);
                 break;
-            case EVENT_OCCURRED:  
+            case EVENT_OCCURRED:
                 t = m->type;
                 switch(t){
                 case REQUEST:
@@ -126,8 +127,8 @@ void proc(long n){
                     if(loss_prob > loss_prob_threshold ){
                         send_msg(m);
                     }
-                    
-                    printf("node.%ld replies a HELLO_ACK to node.%ld at %6.3f seconds\n", m->from, m->to, clock);           
+                    float clock1 = clock;
+                    printf("node.%ld replies a HELLO_ACK to node.%ld at %6.3f seconds\n", m->from, m->to, clock1);           
                     break;
                 case REPLY:
                     record(clock - m->start_time, resp_tm);
@@ -141,7 +142,7 @@ void proc(long n){
                     break;
                 }
                 break;
-        }
+        } 
     }
 }
 
