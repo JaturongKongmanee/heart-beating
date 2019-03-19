@@ -11,7 +11,7 @@
 #define TRANS_TIME 0.1
 #define REQUEST 1 
 #define REPLY 2
-#define INTER_ARR_TIME 30.0
+#define INTER_ARR_TIME 5.0
 
 /* typedef is used to give a name to a type (it can be user-definded type)*/
 typedef struct msg *msg_t;
@@ -41,16 +41,18 @@ void form_reply();
 void return_msg();
 void decode_msg();
 msg_t new_msg();
+void count_msg();
 
 
 long avg_suc_trans, avg_failed_tran, rtt;
 double loss_prob_threshold = 0.3;
-long count;
+long num_gen_mes_node1, num_gen_mes_node2, num_gen_mes_node3;
+long num_gen_mes_node4, num_gen_mes_node0;
 
 void sim(){
     
 
-    printf( "Enter a loss probability value\n:");
+    printf( "Enter a loss probability threshold\n:");
     scanf("%lf", &loss_prob_threshold);
     printf( "You entered loss proability threshold: %lf\n", loss_prob_threshold);
 
@@ -62,7 +64,12 @@ void sim(){
     printf("Average number of successful transmissions %ld\n", avg_suc_trans);
     printf("Average number of failed transmissions %ld\n", avg_failed_tran);
     printf("Average roundtrip time %ld\n", rtt);
-    printf("Count %ld\n", count);
+    /*printf("Count %ld\n", count);*/
+    printf("Node 0 gen %ld\n", num_gen_mes_node0);
+    printf("Node 1 gen %ld\n", num_gen_mes_node1);
+    printf("Node 2 gen %ld\n", num_gen_mes_node2);
+    printf("Node 3 gen %ld\n", num_gen_mes_node3);
+    printf("Node 4 gen %ld\n", num_gen_mes_node4);
 }
 
 void init(){
@@ -103,12 +110,13 @@ void proc(long n){
 
     create("proc");
     while(clock < SIMTIME){
-        /*hold(exponential(INTER_ARR_TIME));*/
-        use(node[n].cpu, exponential(INTER_ARR_TIME));
+        hold(exponential(INTER_ARR_TIME));
+        /*use(node[n].cpu, exponential(INTER_ARR_TIME));*/
         m = new_msg(n);
-        count += 1;
         send_msg(m);
-        printf("node.%ld sends a HELLO to node.%ld at %6.3f seconds\n", m->from, m->to, clock); 
+        printf("node.%ld sends a HELLO to node.%ld at %6.3f seconds\n", m->from, m->to, clock);
+        count_msg("gen msg", m);
+        
 
         s = timed_receive(node[n].mbox, (long *)&m, TIME_OUT);
         switch(s){
@@ -143,6 +151,31 @@ void proc(long n){
                 }
                 break;
         } 
+    }
+}
+
+void count_msg(char *str, msg_t m){
+    long node_num = m->from;
+    switch (node_num)
+    {
+        case 0:
+            num_gen_mes_node0 += 1;
+            break;
+        case 1:
+            num_gen_mes_node1 += 1;
+            break;
+        case 2:
+            num_gen_mes_node2 += 1;
+            break;
+        case 3:
+            num_gen_mes_node3 += 1;
+            break;
+        case 4:
+            num_gen_mes_node4 += 1;
+            break;
+    
+        default:
+            break;
     }
 }
 
