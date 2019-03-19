@@ -39,11 +39,13 @@ void proc();
 void send_msg();
 void form_reply();
 void return_msg();
+void decode_msg();
 msg_t new_msg();
 
 
 long avg_suc_trans, avg_failed_tran, rtt;
 double loss_prob_threshold = 0.3;
+long count;
 
 void sim(){
     
@@ -60,6 +62,7 @@ void sim(){
     printf("Average number of successful transmissions %ld\n", avg_suc_trans);
     printf("Average number of failed transmissions %ld\n", avg_failed_tran);
     printf("Average roundtrip time %ld\n", rtt);
+    printf("Count %ld\n", count);
 }
 
 void init(){
@@ -88,7 +91,6 @@ void init(){
     }
 
     for(i = 0; i < NUM_NODES; i++){
-        hold(expntl(INTER_ARR_TIME));
         proc(i);
     }
         
@@ -101,37 +103,41 @@ void proc(long n){
 
     create("proc");
     while(clock < SIMTIME){
+        m = new_msg(n);
+        hold(expntl(INTER_ARR_TIME));
+        count += 1;
+        send_msg(m);
+        printf("node.%ld sends a HELLO to node.%ld at %6.3f seconds\n", m->from, m->to, clock);
+
         s = timed_receive(node[n].mbox, (long *)&m, TIME_OUT);
         switch(s){
             case TIMED_OUT:
-                m = new_msg(n);
                 avg_failed_tran += 1;
                 rtt += 2;
                 send_msg(m);
                 printf("node.%ld re-sends a HELLO to node.%ld at %6.3f seconds\n", m->from, m->to, clock);
                 break;
-            case EVENT_OCCURRED:
+            case EVENT_OCCURRED:  
                 t = m->type;
                 switch(t){
                 case REQUEST:
                     form_reply(m);
-                    double loss_prob = uniform(0.1, 0.5);
+                    double loss_prob = uniform(0.0, 1.0);
                     if(loss_prob > loss_prob_threshold ){
                         send_msg(m);
-                        /*printf("loss prob > %if %lf\n", loss_prob_threshold , loss_prob);*/
-                        printf("node.%ld replies a HELLO_ACK to node.%ld at %6.3f seconds\n", m->from, m->to, clock);
                     }
-                    /*printf("loss prob <= %lf %lf\n", loss_prob_threshold , loss_prob);*/               
+                    
+                    printf("node.%ld replies a HELLO_ACK to node.%ld at %6.3f seconds\n", m->from, m->to, clock);           
                     break;
                 case REPLY:
                     record(clock - m->start_time, resp_tm);
                     return_msg(m);
-                    form_reply(m);
                     avg_suc_trans += 1;
                     rtt += 0.4;
                     printf("node.%ld receives a HELLO_ACK from node.%ld at %6.3f seconds\n", m->from, m->to, clock);
                     break;
                 default:
+                    printf("Unexpected type");
                     break;
                 }
                 break;
@@ -139,6 +145,12 @@ void proc(long n){
     }
 }
 
+/*void decode_msg(char *str, msg_t m, long n){
+    if(m->type == REPLY){
+        printf("node.%ld %str from node.&ld at %6.3f seconds\n", m->from, m->to, str, clock);
+    }
+    printf("node.%ld %str to node.&ld at %6.3f seconds\n", m->from, m->to, str, clock);
+}*/
 
 void send_msg(msg_t m){
     long from, to;
@@ -189,3 +201,5 @@ void form_reply(msg_t m){
     m->type = REPLY;
     use(node[to].cpu, PROCESS_TIME);
 }
+
+
