@@ -24,12 +24,25 @@ To simulate a simple inter-process communication protocol using [CSIM](http://ww
  ```
  Enter a loss probability value:
  ```
+ * Example of statistical results.
+ ```
+ Statistics of loss probability: 0.300000
+ Average number of successful transmissions 0.59
+ Average number of failed transmissions 0.41
+ Average roundtrip time 0.50
+ Node 0 generates 108 packets
+ Node 1 generates 120 packets
+ Node 2 generates 90 packets
+ Node 3 generates 110 packets
+ Node 4 generates 116 packets
+```
   ### Results
   * Sanpshot of events when packet loss probability is **0.3**
-  ![image of simulation](https://github.com/JaturongKongmanee/heart-beating/blob/master/images/loss_prob_0.3.png)
+  ![image of simulation0](https://github.com/JaturongKongmanee/heart-beating/blob/master/images/ex_print.png) 
+  ![image of simulation1](https://github.com/JaturongKongmanee/heart-beating/blob/master/images/ex_print1.png)
   * The performance metrics against the loss probabilities (0.1, 0.2, 0.3, 0.4, 0.5).
-  ![image of successful vs failed transmission](https://github.com/JaturongKongmanee/heart-beating/blob/master/images/sucessful_vs_failed.png)
-  ![image of rtt](https://github.com/JaturongKongmanee/heart-beating/blob/master/images/rtt.png)
+  ![image of successful vs failed transmission](https://github.com/JaturongKongmanee/heart-beating/blob/master/images/s_f_t.png)
+  ![image of rtt](https://github.com/JaturongKongmanee/heart-beating/blob/master/images/rtt_1.png)
 
 
  ## Authors
