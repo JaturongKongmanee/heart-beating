@@ -78,8 +78,6 @@ void sim(){
     printf("Node 2 generates %ld packets\n", num_gen_mes_node2);
     printf("Node 3 generates %ld packets\n", num_gen_mes_node3);
     printf("Node 4 generates %ld packets\n", num_gen_mes_node4);
-
-    printf("Have to fix print statements of time at receive and reply!!!\n");
 }
 
 void init(){
@@ -162,7 +160,7 @@ void proc(long n){
                     form_reply(m);
                     double loss_prob = uniform(0.0, 1.0);
                     if(loss_prob > loss_prob_threshold ){ 
-                        printf("node.%ld replies a HELLO_ACK-%ld to node.%ld at %6.3f seconds\n", m->from, m->count, m->to, clock - m->start_time); 
+                        printf("node.%ld replies a HELLO_ACK-%ld to node.%ld at %6.3f seconds\n", m->from, m->count, m->to, clock); 
                         send_msg(m);
                     }                        
                     
@@ -175,7 +173,7 @@ void proc(long n){
                     /* In this case, we keep it simple by fixing transmission time and processing time */
                     rtt += 0.4;
                     total_trans += 1;
-                    printf("node.%ld receives a HELLO_ACK-%ld from node.%ld at %6.3f seconds\n", m->to, m->count, m->from, clock - m->start_time);
+                    printf("node.%ld receives a HELLO_ACK-%ld from node.%ld at %6.3f seconds\n", m->to, m->count, m->from, clock);
                     break;
                 default:
                     printf("Unexpected type");
