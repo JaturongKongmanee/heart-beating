@@ -4,7 +4,7 @@
 
 
 /* #define is used to define CONSTANT*/
-#define SIMTIME 1000.0
+#define SIMTIME 30.0
 #define NUM_NODES 5
 #define TIME_OUT 2
 #define PROCESS_TIME 0.2
@@ -60,17 +60,14 @@ void sim(){
     init();
     hold(SIMTIME);
 
-
     printf("Total number of successful transmissions %ld\n", suc_trans);
     printf("Total number of failed transmissions %ld\n", failed_tran);
     printf("Total roundtrip time %ld\n", rtt);
     printf("Total transmission %ld\n", total_trans);
 
-
     printf("Average number of successful transmissions %.2f\n", suc_trans/(float)total_trans);
     printf("Average number of failed transmissions %.2f\n", failed_tran/(float)total_trans);
     printf("Average roundtrip time %.2f\n", rtt/(float)total_trans);
-
 
     printf("Node 0 gen %ld\n", num_gen_mes_node0);
     printf("Node 1 gen %ld\n", num_gen_mes_node1);
@@ -119,9 +116,10 @@ void proc(long n){
     hold(exponential(INTER_ARR_TIME));
     m = new_msg(n);
     m->count = 1;
-    send_msg(m);
-    printf("----------------");
+    printf("----------------\n");
     printf("node.%ld sends a HELLO to node.%ld at %6.3f seconds\n", m->from, m->to, clock);
+    send_msg(m);
+    
     while(clock < SIMTIME){
         
         s = timed_receive(node[n].mbox, (long *)&m, TIME_OUT);
@@ -132,9 +130,8 @@ void proc(long n){
                     hold(exponential(INTER_ARR_TIME));
                     m = new_msg(n);
                     m->count = 1;
-                    send_msg(m);
                     printf("node.%ld sends a HELLO to node.%ld at %6.3f seconds\n", m->from, m->to, clock);
-                    /*printf("msg count %ld", m->count);*/
+                    send_msg(m);                    
                     count_msg("gen msg", m);
 
                     failed_tran += 1;
@@ -144,8 +141,8 @@ void proc(long n){
                     rtt += 2;
                     m->count += 1.0;
                     printf("msg count %ld\n", m->count);
-                    send_msg(m);
                     printf("node.%ld re-sends a HELLO to node.%ld at %6.3f seconds\n", m->from, m->to, clock);
+                    send_msg(m);
                 }
                 
                 break;
@@ -156,12 +153,10 @@ void proc(long n){
                     /* it would take two seconds */
                     form_reply(m);
                     double loss_prob = uniform(0.0, 1.0);
-                    if(loss_prob > loss_prob_threshold ){
-                        printf("node.%ld replies a HELLO_ACK to node.%ld at %6.3f seconds\n", m->from, m->to, clock);    
+                    if(loss_prob > loss_prob_threshold ){                           
                         send_msg(m);
-                    }
-                    float clock1 = clock;
-                           
+                        printf("node.%ld replies a HELLO_ACK to node.%ld at %6.3f seconds\n", m->from, m->to, clock - m->start_time); 
+                    }                           
                     break;
                 case REPLY:
                     record(clock - m->start_time, resp_tm);
@@ -169,7 +164,7 @@ void proc(long n){
                     suc_trans += 1;
                     rtt += 0.4;
                     total_trans += 1;
-                    printf("node.%ld receives a HELLO_ACK from node.%ld at %6.3f seconds\n", m->from, m->to, clock);
+                    printf("node.%ld receives a HELLO_ACK from node.%ld at %6.3f seconds\n", m->to, m->from, clock - m->start_time);
                     break;
                 default:
                     printf("Unexpected type");
