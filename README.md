@@ -38,8 +38,7 @@ To simulate a simple inter-process communication protocol using [CSIM](http://ww
 ```
   ### Results
   * Sanpshot of events when packet loss probability is **0.3**
-  ![image of simulation0](https://github.com/JaturongKongmanee/heart-beating/blob/master/images/ex_print.png) 
-  ![image of simulation1](https://github.com/JaturongKongmanee/heart-beating/blob/master/images/ex_print1.png)
+  ![image of simulation0](https://github.com/JaturongKongmanee/heart-beating/blob/master/images/loss_prob_0.3.png) 
   * The performance metrics against the loss probabilities (0.1, 0.2, 0.3, 0.4, 0.5).
   ![image of successful vs failed transmission](https://github.com/JaturongKongmanee/heart-beating/blob/master/images/s_f_t.png)
   ![image of rtt](https://github.com/JaturongKongmanee/heart-beating/blob/master/images/rtt_1.png)
