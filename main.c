@@ -1,16 +1,16 @@
 /* Project #2; Kongmanee, Jaturong */
-#include "csim.h"
+#include <csim.h>
 #include <stdio.h>
 
 
 /* #define is used to define CONSTANT*/
-#define SIMTIME 30.0
-#define NUM_NODES 5
-#define TIME_OUT 2
+#define SIMTIME 1000.0
+#define NUM_NODES 5l
+#define TIME_OUT 2.0
 #define PROCESS_TIME 0.2
 #define TRANS_TIME 0.1
-#define REQUEST 1 
-#define REPLY 2
+#define REQUEST 1L
+#define REPLY 2L
 #define INTER_ARR_TIME 5.0
 
 /* typedef is used to give a name to a type (it can be user-definded type)*/
@@ -45,7 +45,8 @@ msg_t new_msg();
 void count_msg();
 
 
-long suc_trans, failed_tran, rtt;
+long suc_trans, failed_tran;
+long rtt;
 long total_trans;
 double loss_prob_threshold = 0.3;
 long num_gen_mes_node1, num_gen_mes_node2, num_gen_mes_node3;
@@ -60,20 +61,25 @@ void sim(){
     init();
     hold(SIMTIME);
 
+    /*
     printf("Total number of successful transmissions %ld\n", suc_trans);
     printf("Total number of failed transmissions %ld\n", failed_tran);
     printf("Total roundtrip time %ld\n", rtt);
     printf("Total transmission %ld\n", total_trans);
+    */
 
+    printf("Statistics of loss probability: %lf\n", loss_prob_threshold);
     printf("Average number of successful transmissions %.2f\n", suc_trans/(float)total_trans);
     printf("Average number of failed transmissions %.2f\n", failed_tran/(float)total_trans);
     printf("Average roundtrip time %.2f\n", rtt/(float)total_trans);
 
-    printf("Node 0 gen %ld\n", num_gen_mes_node0);
-    printf("Node 1 gen %ld\n", num_gen_mes_node1);
-    printf("Node 2 gen %ld\n", num_gen_mes_node2);
-    printf("Node 3 gen %ld\n", num_gen_mes_node3);
-    printf("Node 4 gen %ld\n", num_gen_mes_node4);
+    printf("Node 0 generates %ld packets\n", num_gen_mes_node0);
+    printf("Node 1 generates %ld packets\n", num_gen_mes_node1);
+    printf("Node 2 generates %ld packets\n", num_gen_mes_node2);
+    printf("Node 3 generates %ld packets\n", num_gen_mes_node3);
+    printf("Node 4 generates %ld packets\n", num_gen_mes_node4);
+
+    printf("Have to fix print statements of time at receive and reply!!!\n");
 }
 
 void init(){
@@ -116,32 +122,34 @@ void proc(long n){
     hold(exponential(INTER_ARR_TIME));
     m = new_msg(n);
     m->count = 1;
-    printf("----------------\n");
-    printf("node.%ld sends a HELLO to node.%ld at %6.3f seconds\n", m->from, m->to, clock);
-    send_msg(m);
-    
+    printf("node.%ld sends a HELLO-%ld to node.%ld at %6.3f seconds\n", m->from, m->count, m->to, m->start_time);
+    send_msg(m);     
+    count_msg("gen msg", m);
+  
     while(clock < SIMTIME){
         
         s = timed_receive(node[n].mbox, (long *)&m, TIME_OUT);
         switch(s){
             case TIMED_OUT:
-                /* if the sender doe not receive ack packet after sending two times --> it's failed, generate a new packet */
+                /* if the sender does not receive ack packet after sending the same packets two times --> it's failed, generate a new packet */
                 if (m->count >= 2.0) {
                     hold(exponential(INTER_ARR_TIME));
                     m = new_msg(n);
                     m->count = 1;
-                    printf("node.%ld sends a HELLO to node.%ld at %6.3f seconds\n", m->from, m->to, clock);
-                    send_msg(m);                    
+                    printf("node.%ld sends a HELLO-%ld to node.%ld at %6.3f seconds\n", m->from, m->count, m->to, clock);
+                    send_msg(m);     
                     count_msg("gen msg", m);
-
+         
                     failed_tran += 1;
                     total_trans += 1;
                 } else
-                {                  
+                {   
+                    /* In this case, we keep it simple */               
                     rtt += 2;
                     m->count += 1.0;
-                    printf("msg count %ld\n", m->count);
-                    printf("node.%ld re-sends a HELLO to node.%ld at %6.3f seconds\n", m->from, m->to, clock);
+                    /*printf("msg count %ld\n", m->count);*/
+                    
+                    printf("node.%ld re-sends a HELLO-%ld to node.%ld at %6.3f seconds\n", m->from, m->count, m->to, clock);
                     send_msg(m);
                 }
                 
@@ -150,21 +158,24 @@ void proc(long n){
                 t = m->type;
                 switch(t){
                 case REQUEST:
-                    /* it would take two seconds */
+                    /* it would take 0.2 seconds */
                     form_reply(m);
                     double loss_prob = uniform(0.0, 1.0);
-                    if(loss_prob > loss_prob_threshold ){                           
+                    if(loss_prob > loss_prob_threshold ){ 
+                        printf("node.%ld replies a HELLO_ACK-%ld to node.%ld at %6.3f seconds\n", m->from, m->count, m->to, clock - m->start_time); 
                         send_msg(m);
-                        printf("node.%ld replies a HELLO_ACK to node.%ld at %6.3f seconds\n", m->from, m->to, clock - m->start_time); 
-                    }                           
+                    }                        
+                    
+                    /*printf("pppppppp %6.3f, %6.3f, %6.3f\n", clock, m->start_time, clock - m->start_time);*/                         
                     break;
                 case REPLY:
                     record(clock - m->start_time, resp_tm);
                     return_msg(m);
                     suc_trans += 1;
+                    /* In this case, we keep it simple by fixing transmission time and processing time */
                     rtt += 0.4;
                     total_trans += 1;
-                    printf("node.%ld receives a HELLO_ACK from node.%ld at %6.3f seconds\n", m->to, m->from, clock - m->start_time);
+                    printf("node.%ld receives a HELLO_ACK-%ld from node.%ld at %6.3f seconds\n", m->to, m->count, m->from, clock - m->start_time);
                     break;
                 default:
                     printf("Unexpected type");
@@ -213,6 +224,7 @@ void send_msg(msg_t m){
     to = m->to;
 
     reserve(network[from][to]);
+    /* Add the transmission time for 0.1 seconds*/
     hold(TRANS_TIME);
     send(node[to].mbox, (long)m);
     release(network[from][to]);
@@ -254,6 +266,7 @@ void form_reply(msg_t m){
     m->from = to;
     m->to = from;
     m->type = REPLY;
+    /* Add local processing time for 0.2 seconds*/
     use(node[to].cpu, PROCESS_TIME);
 }
 
