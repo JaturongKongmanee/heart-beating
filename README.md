@@ -36,7 +36,7 @@ To simulate a simple inter-process communication protocol using [CSIM](http://ww
  Node 3 generates 110 packets
  Node 4 generates 116 packets
 ```
-  ### Results
+  ### Simulation Results
   * **Sanpshot of events when packet loss probability is ***0.3*****
   ![image of simulation0](https://github.com/JaturongKongmanee/heart-beating/blob/master/images/loss_prob_0.3.png) 
   <br/><br/>
@@ -59,3 +59,5 @@ To simulate a simple inter-process communication protocol using [CSIM](http://ww
 - [CSIM - U of T](http://www.cs.toronto.edu/~iq/csc354s/)
 - [VIM Tutorial](http://www.cse.msu.edu/~cse420/Tutorials/VIM/vim.tutorial)
 - [Computer Architecture](https://www.cse.msu.edu/~cse420/)
+- [Arrays in C](https://www.cs.swarthmore.edu/~newhall/unixhelp/C_arrays.html)
+
