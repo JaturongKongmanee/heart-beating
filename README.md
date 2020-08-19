@@ -5,10 +5,10 @@ To simulate a simple inter-process communication protocol using [CSIM](http://ww
  * Each node generates a HELLO packet with the inter arrival time of exponential distribution (average 5 seconds).
  * A sending node transmits a HELLO packet to a randomly chosen receiving node. A receiving node replies a HELLO_ACK packet back after it receives packet. 
  If the sending node receives the HELLO_ACK, the transmission is successful.
- * The transmission time is 0.1.
- * The transmission delay (e.g., local processing time) is 0.2.
- * The loss probabilities of packet are (0.1, 0.2, 0.3, 0.4, 0.5), due to the unreliable network quality.
- * The timeout period is 2 seconds. If sending node does not receive the HELLO_ACK packet within timeout period, it retransmits a HELLO packet. 
+ * The `transmission time` is `0.1`.
+ * The `transmission delay` (e.g., local processing time) is `0.2`.
+ * The `loss probabilities of packet` are `(0.1, 0.2, 0.3, 0.4, 0.5)`, due to the unreliable network quality.
+ * The `timeout period` is `2 seconds`. If sending node does not receive the HELLO_ACK packet within timeout period, it retransmits a HELLO packet. 
  If sending node still does not receive the HELLO_ACK, then transmission is failed.
  
  ## Getting Started
@@ -16,7 +16,8 @@ To simulate a simple inter-process communication protocol using [CSIM](http://ww
   * install [Code::Blocks](http://www.codeblocks.org/) and [C Programming Language](https://www.geeksforgeeks.org/c-language-set-1-introduction/)
   * install [CSIM](http://www.mesquite.com/)
  ### Compilation & Run
- ```
+ 
+ ```javascript
  csim64.gcc project.c -o project
  ./project
  ```
@@ -25,7 +26,7 @@ To simulate a simple inter-process communication protocol using [CSIM](http://ww
  Enter a loss probability value:
  ```
  * Example of statistical results.
- ```
+ ```python
  Statistics of loss probability: 0.300000
  Average number of successful transmissions 0.59
  Average number of failed transmissions 0.41
@@ -46,7 +47,7 @@ To simulate a simple inter-process communication protocol using [CSIM](http://ww
 
 
  ## Author
-  * **Jaturong Kongmanee** - [jaturong.me](http://jaturong.me/)
+  * **Jaturong Kongmanee** - [jaturongkongmanee.github.io/jk/](https://jaturongkongmanee.github.io/jk/)
   
  ## Acknowledgment
   * **Assistant Professor [Sunho Lim](http://www.myweb.ttu.edu/slim/), Ph.D.**
